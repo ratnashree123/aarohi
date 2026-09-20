@@ -124,12 +124,23 @@ const REMEMBER_RE = /<remember>([\s\S]*?)<\/remember>/g;
 const REMINDER_RE = /<reminder>([\s\S]*?)<\/reminder>/gi;
 const ACTION_RE = /<action\s+type="([^"]+)"(?:\s+recipient="([^"]*)")?(?:\s+message="([^"]*)")?(?:\s+activity="([^"]*)")?(?:\s+category="([^"]*)")?(?:\s+content="([^"]*)")?(?:\s+time="([^"]*)")?(?:\s+state="([^"]*)")?\s*\/?>/gi;
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+};
+
 Deno.serve(async (req) => {
-  const { message, conversation_id, device_role = "companion", personal_model_context = "" } = await req
-    .json();
-  if (!message || typeof message !== "string") {
-    return Response.json({ error: "message required" }, { status: 400 });
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
+
+  try {
+    const { message, conversation_id, device_role = "companion", personal_model_context = "" } = await req
+      .json();
+    if (!message || typeof message !== "string") {
+      return Response.json({ error: "message required" }, { status: 400, headers: corsHeaders });
+    }
 
   // Persona (user-editable via the control panel)
   const { data: cfg } = await db.from("profile_config").select("value")
@@ -141,7 +152,7 @@ Deno.serve(async (req) => {
   if (!convId) {
     const { data: conv, error } = await db.from("conversations")
       .insert({ device_role }).select("id").single();
-    if (error) return Response.json({ error: error.message }, { status: 500 });
+    if (error) return Response.json({ error: error.message }, { status: 500, headers: corsHeaders });
     convId = conv.id;
   }
 
@@ -416,11 +427,20 @@ EMOTION: <number between 0.5 and 0.85>
     latency_ms: latency,
   });
 
-  return Response.json({
-    reply,
-    emotion,
-    reminder: reminderData,
-    action: actionData,
-    conversation_id: convId,
-  });
+    return Response.json({
+      reply,
+      emotion,
+      reminder: reminderData,
+      action: actionData,
+      conversation_id: convId,
+    }, { headers: corsHeaders });
+  } catch (err: any) {
+    console.error("Chat error:", err);
+    return Response.json({
+      error: err.message || "Internal error",
+      reply: "Yes, baby? [chuckle] I'm right here with you. Tell me what's on your mind~",
+      emotion: 0.6,
+      conversation_id: null,
+    }, { headers: corsHeaders });
+  }
 });
