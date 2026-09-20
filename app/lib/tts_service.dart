@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,13 +65,32 @@ class Tts {
   static String stripTags(String t) =>
       t.replaceAll(_tagRe, '').replaceAll(RegExp(r'  +'), ' ').trim();
 
+  double _getSpeechRate(VoiceMode mode) {
+    if (kIsWeb) {
+      switch (mode) {
+        case VoiceMode.angry: return 1.15;
+        case VoiceMode.soft: return 0.90;
+        case VoiceMode.whisper: return 0.85;
+        case VoiceMode.low: return 0.85;
+        case VoiceMode.normal: return 1.0;
+      }
+    } else {
+      switch (mode) {
+        case VoiceMode.angry: return 0.55;
+        case VoiceMode.soft: return 0.38;
+        case VoiceMode.whisper: return 0.30;
+        case VoiceMode.low: return 0.32;
+        case VoiceMode.normal: return 0.45;
+      }
+    }
+  }
+
   Future<void> _initFemaleVoice() async {
     if (_voiceConfigured) return;
     try {
       await _fallback.setVolume(1.0);
       await _fallback.setLanguage('en-US');
-      // Slower, relaxed unhurried pacing (per user request)
-      await _fallback.setSpeechRate(0.38);
+      await _fallback.setSpeechRate(_getSpeechRate(VoiceMode.normal));
       // Gentle feminine pitch
       await _fallback.setPitch(1.15);
 
@@ -105,10 +125,11 @@ class Tts {
     }
   }
 
-  /// Rate for the voice (relaxed pacing: rate * 0.40).
+  /// Rate for the voice
   Future<void> setRate(double rate) async {
     await _initFemaleVoice();
-    await _fallback.setSpeechRate(rate * 0.40);
+    final base = _getSpeechRate(_currentMode);
+    await _fallback.setSpeechRate(rate * base);
   }
 
   /// Sets TTS volume (0.0 to 1.0)
@@ -123,7 +144,7 @@ class Tts {
   Future<void> angryVoice() async {
     await _initFemaleVoice();
     await _fallback.setVolume(1.0);
-    await _fallback.setSpeechRate(0.46); // Fast, punchy, heated pacing
+    await _fallback.setSpeechRate(_getSpeechRate(VoiceMode.angry));
     await _fallback.setPitch(1.30);      // High pitch = heated emotion
     _currentMode = VoiceMode.angry;
   }
@@ -132,7 +153,7 @@ class Tts {
   Future<void> softVoice() async {
     await _initFemaleVoice();
     await _fallback.setVolume(0.85);
-    await _fallback.setSpeechRate(0.32); // Slow, relaxed, affectionate
+    await _fallback.setSpeechRate(_getSpeechRate(VoiceMode.soft));
     await _fallback.setPitch(1.20);      // Warm feminine pitch
     _currentMode = VoiceMode.soft;
   }
@@ -141,7 +162,7 @@ class Tts {
   Future<void> whisper() async {
     await _initFemaleVoice();
     await _fallback.setVolume(0.78);     // Clearly audible whisper volume
-    await _fallback.setSpeechRate(0.26); // Slow, secretive pacing
+    await _fallback.setSpeechRate(_getSpeechRate(VoiceMode.whisper));
     await _fallback.setPitch(0.90);      // Breathy lower pitch
     _currentMode = VoiceMode.whisper;
   }
@@ -150,7 +171,7 @@ class Tts {
   Future<void> lowVoice() async {
     await _initFemaleVoice();
     await _fallback.setVolume(0.75);     // Audible apologetic volume
-    await _fallback.setSpeechRate(0.28); // Slow, sheepish
+    await _fallback.setSpeechRate(_getSpeechRate(VoiceMode.low));
     await _fallback.setPitch(0.95);      // Flat, subdued
     _currentMode = VoiceMode.low;
   }
@@ -159,7 +180,7 @@ class Tts {
   Future<void> normalVoice() async {
     await _initFemaleVoice();
     await _fallback.setVolume(1.0);
-    await _fallback.setSpeechRate(0.38);
+    await _fallback.setSpeechRate(_getSpeechRate(VoiceMode.normal));
     await _fallback.setPitch(1.15);
     _currentMode = VoiceMode.normal;
   }
@@ -171,29 +192,25 @@ class Tts {
   Future<void> speak(String text, {double emotion = 0.6}) async {
     await _initFemaleVoice();
     // Re-apply current voice mode settings BEFORE speaking to ensure they stick
+    await _fallback.setSpeechRate(_getSpeechRate(_currentMode));
     switch (_currentMode) {
       case VoiceMode.angry:
         await _fallback.setVolume(1.0);
-        await _fallback.setSpeechRate(0.55);
         await _fallback.setPitch(1.35);
         break;
       case VoiceMode.soft:
         await _fallback.setVolume(0.85);
-        await _fallback.setSpeechRate(0.32);
         await _fallback.setPitch(1.20);
         break;
       case VoiceMode.whisper:
-        await _fallback.setVolume(0.78);    // Clearly audible whisper!
-        await _fallback.setSpeechRate(0.26);
+        await _fallback.setVolume(0.78);
         await _fallback.setPitch(0.90);
         break;
       case VoiceMode.low:
         await _fallback.setVolume(0.75);
-        await _fallback.setSpeechRate(0.28);
         await _fallback.setPitch(0.95);
         break;
       case VoiceMode.normal:
-        // Only in normal mode: apply emotion-based pitch variation
         await _fallback.setVolume(1.0);
         try {
           await _fallback.setPitch((1.15 + (emotion - 0.6) * 0.3).clamp(1.0, 1.3));
