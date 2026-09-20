@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aarohi - Work Station Monitor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "primary-fixed-dim": "#ffb874",
+                "error": "#ffb4ab",
+                "error-container": "#93000a",
+                "on-secondary-fixed-variant": "#5a4229",
+                "on-secondary": "#412c15",
+                "on-tertiary": "#00344a",
+                "on-primary": "#4b2800",
+                "on-primary-fixed": "#2d1600",
+                "secondary-fixed": "#ffdcbb",
+                "on-surface": "#e5e2e1",
+                "on-tertiary-container": "#004764",
+                "surface-variant": "#353534",
+                "on-background": "#e5e2e1",
+                "surface": "#131313",
+                "on-error": "#690005",
+                "surface-bright": "#3a3939",
+                "on-surface-variant": "#dbc2ad",
+                "on-primary-container": "#643700",
+                "inverse-on-surface": "#313030",
+                "surface-tint": "#ffb874",
+                "secondary": "#e2c1a0",
+                "tertiary-container": "#00bbfe",
+                "surface-container-lowest": "#0e0e0e",
+                "secondary-container": "#5a4229",
+                "on-error-container": "#ffdad6",
+                "on-primary-fixed-variant": "#6a3b00",
+                "surface-dim": "#131313",
+                "background": "#131313",
+                "primary": "#ffbd7f",
+                "primary-container": "#ff9500",
+                "outline-variant": "#554334",
+                "tertiary-fixed-dim": "#7fd0ff",
+                "on-secondary-container": "#d0af8f",
+                "primary-fixed": "#ffdcbf",
+                "tertiary-fixed": "#c5e7ff",
+                "surface-container": "#201f1f",
+                "surface-container-high": "#2a2a2a",
+                "surface-container-low": "#1c1b1b",
+                "on-tertiary-fixed": "#001e2d",
+                "tertiary": "#8ad3ff",
+                "on-tertiary-fixed-variant": "#004c6a",
+                "secondary-fixed-dim": "#e2c1a0",
+                "surface-container-highest": "#353534",
+                "on-secondary-fixed": "#291804",
+                "inverse-surface": "#e5e2e1",
+                "outline": "#a38d7a",
+                "inverse-primary": "#8c5000"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "touch-target-min": "56px",
+                "element-gap": "16px",
+                "container-padding-desktop": "40px",
+                "unit": "8px",
+                "container-padding-mobile": "24px"
+            },
+            "fontFamily": {
+                "display-lg": ["Plus Jakarta Sans"],
+                "body-lg": ["Plus Jakarta Sans"],
+                "display-lg-mobile": ["Plus Jakarta Sans"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "body-md": ["Plus Jakarta Sans"],
+                "label-caps": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                "display-lg-mobile": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0A0A0A;
+            color: #e5e2e1;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .orb-container {
+            filter: drop-shadow(0 0 40px rgba(255, 184, 116, 0.15));
+        }
+
+        .glass-panel {
+            background: rgba(28, 27, 27, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(44, 26, 5, 0.5);
+        }
+
+        .ocr-pulse {
+            animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.95); }
+        }
+
+        .scanline {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #ffb874, transparent);
+            position: absolute;
+            width: 100%;
+            top: 0;
+            z-index: 10;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-background">
+<!-- Top AppBar (Identity & Active State) -->
+<header class="w-full top-0 sticky flex justify-between items-center px-container-padding-mobile py-unit max-w-[800px] mx-auto z-50">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md-mobile text-primary">Good Morning</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="w-2 h-2 rounded-full bg-[#4ADE80] ocr-pulse"></span>
+<span class="font-label-caps text-label-caps text-[#4ADE80] tracking-widest uppercase">OCR ACTIVE</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-full border border-outline-variant overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover opacity-80" data-alt="A clean professional headshot of a user in soft lighting with a warm umber tone to match the brand aesthetic, minimalist background, highly detailed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3eN2Xi86zjD6_sN2QCD--7xwM6v_63Naqil0t4vow_uqkXmRBQ8VyPtwBPTC5INfsYp_M_A7G_7cVIEmRi-cSsFpb9B1zZo1AdMPsWpYruj2CLOdRl-S3ESz0ApWgDVlQKAZbNcG4ykUCfKoP4HlrPN6uAX5bZYQtGkZmvld0kBiZEM4Bnn51iJe_sixjFNupAARw-VAeYYLmt76LKbFfcZGsDm0cVQv-fRfCfY2X5Gk8EWeyFxs49blfGGEJXyKhXjxxITcD5nI"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col items-center justify-between px-container-padding-mobile pb-32 pt-4 relative max-w-[800px] mx-auto w-full">
+<!-- Live Camera Preview (Bento-style Top Card) -->
+<div class="w-full h-40 glass-panel rounded-xl relative overflow-hidden group">
+<div class="scanline"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="A high-angle bird's eye view of a developer workstation. A laptop showing lines of code, a secondary monitor, and a coffee mug are visible in a dimly lit room with warm amber ambient lighting. The scene is slightly blurred to simulate a camera focus." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAQNysgLWttx0mTkjXY2h3nsIBSR_Cs8PkngNpKfB7GQ25XWSwUFqZc6Szt9De_nDn5xljvjMqGdD6AJScnh-cSWTAsy--66y2ONc7Rn6MAGar62mN6IZiR7C3mpqFy7Q9t7nw865KaFwRWBU1Dr3nNqocyqbaC8w2NLeMkT7KdCzu2ULh2bDsebiVzDFJnC2tGI1K9v0ndZbmSkUriUtwo9X0KyH6C-IntX-cJYbYwaXDHTc4nvH2FccPuh22dRC5vyv2oluh_VuU')">
+</div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="border-2 border-primary/20 w-32 h-20 rounded-sm"></div>
+</div>
+<div class="absolute bottom-3 left-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">videocam</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Stream-01 // Primary</span>
+</div>
+</div>
+<!-- Central Voice Orb Area (The Inner Light) -->
+<div class="flex-1 flex flex-col items-center justify-center w-full relative">
+<div class="orb-container relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">
+<!-- Glowing Shader Backdrop -->
+
+<!-- Center Focus -->
+<div class="relative z-10 text-center">
+<span class="font-label-caps text-label-caps text-primary/60 uppercase tracking-[0.2em] block mb-4">Aarohi</span>
+<p class="font-headline-md text-headline-md-mobile text-on-surface opacity-80">Watching your flow...</p>
+</div>
+</div>
+</div>
+<!-- Bottom Transactional Area (Analysis Drawer Preview) -->
+<div class="w-full space-y-element-gap">
+<div class="flex items-center justify-between px-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Recent Insights</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:opacity-60 transition-opacity">auto_graph</span>
+</div>
+<div class="glass-panel p-6 rounded-xl flex flex-col gap-4 border-l-4 border-primary">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">confirmation_number</span>
+</div>
+<div>
+<h3 class="font-body-md text-on-surface font-semibold">Analyzing Ticket #8492</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant opacity-70">Detection: Visual Screen OCR</p>
+</div>
+</div>
+<span class="font-label-caps text-label-caps text-primary px-2 py-1 rounded-full bg-primary/10 border border-primary/20">LIVE</span>
+</div>
+<div class="space-y-unit">
+<div class="w-full bg-surface-container rounded-full h-1 overflow-hidden">
+<div class="bg-primary h-full w-2/3 shadow-[0_0_8px_rgba(255,189,127,0.5)]"></div>
+</div>
+<p class="font-body-md text-on-surface-variant text-[14px]">I noticed the stack trace you're looking at refers to a null pointer in the auth middleware. Would you like me to pull the logs?</p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-lg font-label-caps text-label-caps active:scale-95 transition-transform">
+                        PULL LOGS
+                    </button>
+<button class="px-4 border border-outline-variant text-on-surface py-3 rounded-lg font-label-caps text-label-caps active:scale-95 transition-transform hover:bg-surface-variant/30">
+                        IGNORE
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell (Persistent) -->
+<nav class="fixed bottom-0 left-0 w-full h-[88px] flex justify-around items-center px-container-padding-mobile pb-safe bg-surface-container-low/80 backdrop-blur-md border-t border-secondary-container shadow-[0_-4px_20px_rgba(255,184,116,0.1)] z-50">
+<div class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined">chat_bubble</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined">fitness_center</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full w-touch-target-min h-touch-target-min Active: scale-110 duration-300 ease-out">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">timer</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined">person</span>
+</div>
+</nav>
+<!-- Interactive Scripts -->
+<script>
+        // Micro-interaction: Subtle orb expansion on "hearing" clicks
+        document.querySelector('.orb-container').addEventListener('click', function() {
+            this.classList.add('scale-105');
+            setTimeout(() => this.classList.remove('scale-105'), 300);
+        });
+
+        // Simulating the analysis pulse
+        setInterval(() => {
+            const analysisCard = document.querySelector('.glass-panel.border-l-4');
+            analysisCard.classList.add('border-primary-fixed-dim');
+            setTimeout(() => analysisCard.classList.remove('border-primary-fixed-dim'), 1000);
+        }, 3000);
+    </script>
+</body></html>

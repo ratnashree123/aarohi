@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Aarohi - Morning Alarm</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#ffb874",
+                    "error": "#ffb4ab",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#5a4229",
+                    "on-secondary": "#412c15",
+                    "on-tertiary": "#00344a",
+                    "on-primary": "#4b2800",
+                    "on-primary-fixed": "#2d1600",
+                    "secondary-fixed": "#ffdcbb",
+                    "on-surface": "#e5e2e1",
+                    "on-tertiary-container": "#004764",
+                    "surface-variant": "#353534",
+                    "on-background": "#e5e2e1",
+                    "surface": "#131313",
+                    "on-error": "#690005",
+                    "surface-bright": "#3a3939",
+                    "on-surface-variant": "#dbc2ad",
+                    "on-primary-container": "#643700",
+                    "inverse-on-surface": "#313030",
+                    "surface-tint": "#ffb874",
+                    "secondary": "#e2c1a0",
+                    "tertiary-container": "#00bbfe",
+                    "surface-container-lowest": "#0e0e0e",
+                    "secondary-container": "#5a4229",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#6a3b00",
+                    "surface-dim": "#131313",
+                    "background": "#131313",
+                    "primary": "#ffbd7f",
+                    "primary-container": "#ff9500",
+                    "outline-variant": "#554334",
+                    "tertiary-fixed-dim": "#7fd0ff",
+                    "on-secondary-container": "#d0af8f",
+                    "primary-fixed": "#ffdcbf",
+                    "tertiary-fixed": "#c5e7ff",
+                    "surface-container": "#201f1f",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-low": "#1c1b1b",
+                    "on-tertiary-fixed": "#001e2d",
+                    "tertiary": "#8ad3ff",
+                    "on-tertiary-fixed-variant": "#004c6a",
+                    "secondary-fixed-dim": "#e2c1a0",
+                    "surface-container-highest": "#353534",
+                    "on-secondary-fixed": "#291804",
+                    "inverse-surface": "#e5e2e1",
+                    "outline": "#a38d7a",
+                    "inverse-primary": "#8c5000"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "touch-target-min": "56px",
+                    "element-gap": "16px",
+                    "container-padding-desktop": "40px",
+                    "unit": "8px",
+                    "container-padding-mobile": "24px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "display-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "label-caps": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .glow-aura {
+            background: radial-gradient(circle at center, rgba(255, 184, 116, 0.15) 0%, rgba(10, 10, 10, 0) 70%);
+        }
+
+        .text-reveal {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        @keyframes reveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-active-glow:active {
+            box-shadow: 0 0 20px rgba(255, 184, 116, 0.4);
+            transform: scale(0.98);
+        }
+
+        .orb-shadow {
+            box-shadow: 0 0 40px rgba(255, 150, 0, 0.2), 0 0 100px rgba(255, 150, 0, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen overflow-hidden font-body-md selection:bg-primary/30">
+<!-- Ambient Background Glow -->
+<div class="fixed inset-0 glow-aura pointer-events-none"></div>
+<!-- Main Alarm Container -->
+<main class="relative z-10 flex flex-col h-screen max-w-[800px] mx-auto px-container-padding-mobile">
+<!-- Top Half: Glowing Voice Orb (Aarohi Persona) -->
+<section class="flex-1 flex flex-col items-center justify-center pt-12 relative">
+<div class="w-64 h-64 md:w-80 md:h-80 rounded-full relative overflow-hidden orb-shadow">
+
+</div>
+<div class="mt-element-gap text-center space-y-2">
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary-fixed-dim">
+                    Good Morning, Mithun.
+                </h1>
+<p class="font-headline-md text-headline-md-mobile md:text-headline-md text-on-surface-variant/80">
+                    Time to shine.
+                </p>
+</div>
+</section>
+<!-- Bottom Half: Controls & Info -->
+<section class="pb-16 flex flex-col gap-8">
+<!-- Today's Plan (Animated Reveal) -->
+<div class="space-y-3 bg-surface-container-low/40 backdrop-blur-sm p-6 rounded-xl border border-outline-variant/30" id="plan-container">
+<div class="flex items-center gap-2 text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="font-label-caps text-label-caps uppercase tracking-widest">Today's Focus</span>
+</div>
+<div class="space-y-4">
+<p class="text-reveal font-body-lg text-body-lg text-on-surface leading-relaxed" style="animation-delay: 0.5s;">
+                        We’re starting with a <span class="text-primary font-semibold">20-min cardio blast</span> to wake up the system.
+                    </p>
+<p class="text-reveal font-body-md text-body-md text-on-surface-variant" style="animation-delay: 1.5s;">
+                        Your first meeting is at 10:00 AM. You've got plenty of time for a steady recovery.
+                    </p>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-4">
+<!-- Primary Action -->
+<button class="w-full h-touch-target-min bg-primary text-on-primary font-headline-md text-headline-md-mobile rounded-xl transition-all duration-300 active:scale-95 btn-active-glow flex items-center justify-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">wb_sunny</span>
+                    I'M UP
+                </button>
+<!-- Secondary Action -->
+<button class="w-full h-touch-target-min border border-outline text-on-surface-variant font-headline-md text-headline-md-mobile rounded-xl transition-all duration-300 hover:bg-surface-variant/20 active:scale-95 flex items-center justify-center gap-3">
+<span class="material-symbols-outlined">snooze</span>
+                    SNOOZE
+                </button>
+</div>
+</section>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        // Simple haptic-like visual feedback and interaction handling
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('touchstart', () => {
+                // Potential for subtle vibration or sound via JS if needed
+            });
+        });
+
+        // Simulating the "reading" effect for the plan
+        const planText = document.querySelectorAll('.text-reveal');
+        // In a real app, these would be synced with audio playback duration
+    </script>
+</body></html>

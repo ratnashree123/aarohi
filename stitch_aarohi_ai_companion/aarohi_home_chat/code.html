@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Aarohi - Your AI Companion</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0A0A0A;
+            color: #e5e2e1;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-panel {
+            background: rgba(28, 27, 27, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(44, 26, 5, 0.5);
+        }
+
+        .orb-glow {
+            box-shadow: 0 0 20px rgba(255, 184, 116, 0.4), 0 0 60px rgba(255, 149, 0, 0.1);
+        }
+
+        .chat-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .chat-bubble-aarohi {
+            border-left: 1px solid #ffb874;
+            background: linear-gradient(90deg, rgba(255, 184, 116, 0.05) 0%, rgba(255, 184, 116, 0) 100%);
+        }
+
+        .chat-bubble-user {
+            border: 1px solid rgba(229, 226, 225, 0.3);
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.98); }
+        }
+        .pulse-soft { animation: pulse-soft 3s ease-in-out infinite; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#ffb874",
+                        "error": "#ffb4ab",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#5a4229",
+                        "on-secondary": "#412c15",
+                        "on-tertiary": "#00344a",
+                        "on-primary": "#4b2800",
+                        "on-primary-fixed": "#2d1600",
+                        "secondary-fixed": "#ffdcbb",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-container": "#004764",
+                        "surface-variant": "#353534",
+                        "on-background": "#e5e2e1",
+                        "surface": "#131313",
+                        "on-error": "#690005",
+                        "surface-bright": "#3a3939",
+                        "on-surface-variant": "#dbc2ad",
+                        "on-primary-container": "#643700",
+                        "inverse-on-surface": "#313030",
+                        "surface-tint": "#ffb874",
+                        "secondary": "#e2c1a0",
+                        "tertiary-container": "#00bbfe",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary-container": "#5a4229",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#6a3b00",
+                        "surface-dim": "#131313",
+                        "background": "#131313",
+                        "primary": "#ffbd7f",
+                        "primary-container": "#ff9500",
+                        "outline-variant": "#554334",
+                        "tertiary-fixed-dim": "#7fd0ff",
+                        "on-secondary-container": "#d0af8f",
+                        "primary-fixed": "#ffdcbf",
+                        "tertiary-fixed": "#c5e7ff",
+                        "surface-container": "#201f1f",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container-low": "#1c1b1b",
+                        "on-tertiary-fixed": "#001e2d",
+                        "tertiary": "#8ad3ff",
+                        "on-tertiary-fixed-variant": "#004c6a",
+                        "secondary-fixed-dim": "#e2c1a0",
+                        "surface-container-highest": "#353534",
+                        "on-secondary-fixed": "#291804",
+                        "inverse-surface": "#e5e2e1",
+                        "outline": "#a38d7a",
+                        "inverse-primary": "#8c5000"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "touch-target-min": "56px",
+                        "element-gap": "16px",
+                        "container-padding-desktop": "40px",
+                        "unit": "8px",
+                        "container-padding-mobile": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background selection:bg-primary-container/30">
+<!-- Top Navigation Header (Predicted: TopAppBar) -->
+<header class="w-full top-0 sticky z-50 flex justify-between items-center px-container-padding-mobile py-unit max-w-[800px] mx-auto bg-background/80 backdrop-blur-md">
+<h1 class="font-headline-md text-headline-md-mobile text-primary">Good Morning</h1>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform">settings</button>
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait photo of a focused South Asian man in his late 20s, with a warm and approachable expression. He is wearing high-performance athletic apparel in a dimly lit, high-end private gym setting. The lighting is soft and directional, casting subtle shadows that emphasize a healthy lifestyle and modern professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNnaL60JztobvFE237f6s9t1P7K7Vc0uzNcbqCmtDGt2jX0brFQ7Ciq982KrIhjGYuuRXLQ8oUZ2LhKmU0KG88j12vS8MAOZdaUZVQcU_nZG1E2h_4psbaMb2qaLbnoqovQ_Im4EYsZ-2dzHOkeBBRzXCce4MzSNuJohL1H7h4otXSQQQSUeGeorjtViqC-CXXszhVqfphogUrNw7l6ufGF-xotKId6vN9RWXfWmHjXHMes5eL66rRsDk3RqjkjUYF3Njgbjf0Oc8"/>
+</div>
+</div>
+</header>
+<main class="max-w-[800px] mx-auto px-container-padding-mobile pb-32">
+<!-- Today at a Glance Section -->
+<section class="mt-4 mb-10">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-4 uppercase tracking-widest">Today at a glance</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Workout Card -->
+<div class="glass-panel rounded-xl p-5 flex items-center justify-between group hover:border-primary-fixed-dim/50 transition-colors duration-500">
+<div>
+<p class="font-body-md text-on-surface-variant">Workout of the Day</p>
+<h3 class="font-headline-md text-headline-md-mobile text-primary">Heavy Leg Day</h3>
+<p class="text-[14px] text-secondary mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">timer</span> 45 mins • Advanced
+                        </p>
+</div>
+<div class="bg-primary-container/10 p-3 rounded-full">
+<span class="material-symbols-outlined text-primary scale-125">fitness_center</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Water Progress -->
+<div class="glass-panel rounded-xl p-5 flex flex-col items-center justify-center text-center">
+<div class="relative w-16 h-16 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90">
+<circle cx="32" cy="32" fill="transparent" r="28" stroke="rgba(255,184,116,0.1)" stroke-width="4"></circle>
+<circle class="transition-all duration-1000 ease-out" cx="32" cy="32" fill="transparent" r="28" stroke="#ffb874" stroke-dasharray="176" stroke-dashoffset="35" stroke-width="4"></circle>
+</svg>
+<span class="absolute text-[12px] font-bold text-primary">80%</span>
+</div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-2">Hydration</p>
+</div>
+<!-- Reminder Card -->
+<div class="glass-panel rounded-xl p-5 flex flex-col justify-center">
+<span class="material-symbols-outlined text-tertiary mb-2">event_note</span>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Next</p>
+<p class="font-body-md text-on-surface leading-tight">Meeting at 2pm</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Conversation History (The Main Body) -->
+<section class="chat-container space-y-8 min-h-[353px]">
+<!-- Aarohi Message -->
+<div class="flex flex-col gap-2 max-w-[85%]">
+<div class="chat-bubble-aarohi p-5 rounded-tr-2xl rounded-br-2xl">
+<p class="font-body-md text-on-surface leading-relaxed">
+                        Good morning, Mithun! You've been so consistent this week. Ready to crush that leg day? 
+                    </p>
+<p class="font-body-md text-on-surface leading-relaxed mt-2">
+                        I've adjusted your rest periods today to maximize that intensity you mentioned yesterday.
+                    </p>
+</div>
+<span class="text-[10px] text-on-surface-variant/50 ml-1 uppercase font-bold tracking-tighter">Aarohi • 8:32 AM</span>
+</div>
+<!-- User Message -->
+<div class="flex flex-col gap-2 items-end ml-auto max-w-[85%]">
+<div class="chat-bubble-user p-5 rounded-tl-2xl rounded-bl-2xl">
+<p class="font-body-md text-on-surface leading-relaxed">
+                        Thanks, Aarohi. I'm feeling a bit tired but definitely want to get it done. Let's do the adjusted version.
+                    </p>
+</div>
+<span class="text-[10px] text-on-surface-variant/50 mr-1 uppercase font-bold tracking-tighter">You • 8:34 AM</span>
+</div>
+<!-- Aarohi Encouragement -->
+<div class="flex flex-col gap-2 max-w-[85%]">
+<div class="chat-bubble-aarohi p-5 rounded-tr-2xl rounded-br-2xl">
+<p class="font-body-md text-on-surface leading-relaxed">
+                        I hear you. Fatigue is just the threshold of growth. I'll be right here in your ear. We'll start with a dynamic warm-up to wake those glutes up. Shall we?
+                    </p>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="bg-secondary-container/30 border border-secondary-container px-4 py-2 rounded-full text-[13px] text-secondary font-semibold active:scale-95 transition-transform">Let's start</button>
+<button class="bg-surface-container-high/50 border border-outline-variant px-4 py-2 rounded-full text-[13px] text-on-surface-variant font-semibold active:scale-95 transition-transform">5 more mins</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Persistent Bottom Shell -->
+<div class="fixed bottom-0 left-0 w-full z-40">
+<!-- Interaction Area -->
+<div class="max-w-[800px] mx-auto relative h-40 flex flex-col items-center justify-end pb-8">
+<!-- Voice Orb (The Beacon) -->
+<div class="relative w-24 h-24 flex items-center justify-center cursor-pointer group">
+<div class="absolute inset-0 bg-primary-container/20 rounded-full blur-2xl group-hover:bg-primary-container/40 transition-colors duration-700"></div>
+<div class="orb-glow relative w-16 h-16 rounded-full overflow-hidden border border-primary-fixed-dim/30 bg-black pulse-soft">
+
+</div>
+<!-- Interaction Indicator -->
+<div class="absolute -top-12 bg-surface-container-high/80 backdrop-blur px-4 py-1.5 rounded-full border border-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">
+<p class="text-[11px] font-bold text-primary tracking-widest uppercase">Tap to speak</p>
+</div>
+</div>
+</div>
+<!-- Shared BottomNavBar Component -->
+<nav class="fixed bottom-0 left-0 w-full h-[88px] flex justify-around items-center px-container-padding-mobile pb-safe bg-surface-container-low/80 backdrop-blur-md border-t border-secondary-container shadow-[0_-4px_20px_rgba(255,184,116,0.1)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">fitness_center</span>
+</a>
+<div class="w-touch-target-min h-touch-target-min"></div> <!-- Spacer for Orb -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">timer</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+</a>
+</nav>
+</div>
+<script>
+        // Simple Micro-interactions
+        document.querySelector('.orb-glow').addEventListener('click', function() {
+            this.classList.toggle('scale-110');
+            // Mock voice trigger effect
+            const glow = this.previousElementSibling;
+            glow.style.transform = 'scale(1.5)';
+            glow.style.background = 'rgba(255, 149, 0, 0.4)';
+            setTimeout(() => {
+                glow.style.transform = 'scale(1)';
+                glow.style.background = 'rgba(255, 184, 116, 0.2)';
+            }, 300);
+        });
+
+        // Scroll Reveal effect for chat bubbles
+        const observerOptions = {
+            threshold: 0.1
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-4');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.chat-container > div').forEach(div => {
+            div.classList.add('transition-all', 'duration-700', 'ease-out', 'opacity-0', 'translate-y-4');
+            observer.observe(div);
+        });
+    </script>
+</body></html>

@@ -1,0 +1,27 @@
+# Secrets and credentials
+.db-password.txt
+*.env
+*.env.*
+
+# Flutter & Dart build artifacts
+app/build/
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.pub/
+app/.pub-cache/
+
+# Android Studio & IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Python
+**/__pycache__/
+*.pyc
+
+# Archives
+*.zip

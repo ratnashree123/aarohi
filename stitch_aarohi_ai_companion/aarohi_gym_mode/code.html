@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aarohi - Gym Mode</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#ffb874",
+                    "error": "#ffb4ab",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#5a4229",
+                    "on-secondary": "#412c15",
+                    "on-tertiary": "#00344a",
+                    "on-primary": "#4b2800",
+                    "on-primary-fixed": "#2d1600",
+                    "secondary-fixed": "#ffdcbb",
+                    "on-surface": "#e5e2e1",
+                    "on-tertiary-container": "#004764",
+                    "surface-variant": "#353534",
+                    "on-background": "#e5e2e1",
+                    "surface": "#131313",
+                    "on-error": "#690005",
+                    "surface-bright": "#3a3939",
+                    "on-surface-variant": "#dbc2ad",
+                    "on-primary-container": "#643700",
+                    "inverse-on-surface": "#313030",
+                    "surface-tint": "#ffb874",
+                    "secondary": "#e2c1a0",
+                    "tertiary-container": "#00bbfe",
+                    "surface-container-lowest": "#0e0e0e",
+                    "secondary-container": "#5a4229",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#6a3b00",
+                    "surface-container": "#201f1f",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-low": "#1c1b1b",
+                    "on-tertiary-fixed": "#001e2d",
+                    "tertiary": "#8ad3ff",
+                    "on-tertiary-fixed-variant": "#004c6a",
+                    "secondary-fixed-dim": "#e2c1a0",
+                    "surface-container-highest": "#353534",
+                    "on-secondary-fixed": "#291804",
+                    "inverse-surface": "#e5e2e1",
+                    "outline": "#a38d7a",
+                    "inverse-primary": "#8c5000"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "touch-target-min": "56px",
+                    "element-gap": "16px",
+                    "container-padding-desktop": "40px",
+                    "unit": "8px",
+                    "container-padding-mobile": "24px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "display-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "label-caps": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0A0A0A;
+            color: #e5e2e1;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+        }
+        .glass-card {
+            background: rgba(28, 27, 27, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(44, 26, 5, 0.5);
+        }
+        .amber-glow {
+            box-shadow: 0 0 20px rgba(255, 184, 116, 0.2), 0 0 60px rgba(255, 184, 116, 0.1);
+        }
+        .active-glow-border {
+            border-color: #ffb874;
+            box-shadow: 0 0 15px rgba(255, 184, 116, 0.4);
+        }
+        .water-ring-svg {
+            transform: rotate(-90deg);
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-ring 3s infinite ease-in-out;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="dark flex flex-col h-screen">
+<!-- Top App Bar -->
+<header class="w-full top-0 sticky flex justify-between items-center px-container-padding-mobile py-unit max-w-[800px] mx-auto z-20">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A close-up portrait of a fitness user with focused eyes and soft gym lighting, high contrast, warm tones, professional sports photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIYSeBom7VsTvWWactYY-nInWo1ARDK0sCTcS1En6Jj3UPCVNln1NZ7eFu7txybQzXQukui3mGeg3MbcHLrSGl67C1NjlK1721TL4y3oAZ1XAMzgRWy6BROqk-LlShkbw8NDTwbuoNPsMqBNlkCMm_BwOFKlPGoSVklI2I7-qZb3TNRGYIcmWwy3T_i61d1iVaNKbC-WC5yI1D0llwB8yvic0p-4ivpWIp1ZEkbGjislnhIUyMf101zxoSr_onitsOAM7vdtceD_Q"/>
+</div>
+<span class="font-headline-md text-headline-md-mobile text-primary">Good Morning</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform" data-icon="settings">settings</button>
+</header>
+<main class="flex-1 max-w-[800px] mx-auto w-full px-container-padding-mobile flex flex-col justify-between py-6 relative overflow-hidden">
+<!-- Water Ring (Corner Float) -->
+<div class="absolute top-0 right-6 w-24 h-24 flex items-center justify-center">
+<svg class="water-ring-svg w-20 h-20" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#353534" stroke-width="4"></circle>
+<circle class="drop-shadow-[0_0_8px_#8ad3ff]" cx="50" cy="50" fill="none" r="45" stroke="#8ad3ff" stroke-dasharray="283" stroke-dashoffset="70" stroke-linecap="round" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-[20px]" data-icon="water_drop">water_drop</span>
+<span class="text-[10px] font-bold text-on-surface tracking-tighter">1.2L</span>
+</div>
+</div>
+<!-- Huge Exercise Title -->
+<section class="text-center mt-4">
+<h1 class="font-display-lg-mobile md:text-display-lg text-white tracking-tight uppercase">Bench Press</h1>
+<div class="flex justify-center gap-8 mt-2">
+<div class="text-left">
+<p class="text-label-caps font-label-caps text-on-surface-variant">LAST</p>
+<p class="font-headline-md text-on-surface">60kg x 8</p>
+</div>
+<div class="w-[1px] h-10 bg-outline-variant/30"></div>
+<div class="text-left">
+<p class="text-label-caps font-label-caps text-primary">GOAL</p>
+<p class="font-headline-md text-primary">62kg x 8</p>
+</div>
+</div>
+</section>
+<!-- Large Rest Timer -->
+<section class="flex flex-col items-center justify-center my-4">
+<div class="relative w-48 h-48 flex items-center justify-center">
+<div class="absolute inset-0 rounded-full border-2 border-outline-variant/20"></div>
+<div class="absolute inset-0 rounded-full border-t-2 border-primary animate-spin" style="animation-duration: 3s;"></div>
+<div class="text-center">
+<span class="text-[64px] font-extrabold text-white leading-none">0:45</span>
+<p class="text-label-caps font-label-caps text-on-surface-variant tracking-widest mt-1">RESTING</p>
+</div>
+</div>
+</section>
+<!-- Big Voice-Log Interaction Area -->
+<section class="flex flex-col items-center gap-6">
+<button class="group relative flex flex-col items-center justify-center w-[280px] h-touch-target-min rounded-xl glass-card border-primary active-glow-border transition-all duration-300 active:scale-95">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+<div class="text-left">
+<span class="block text-label-caps font-label-caps text-on-surface-variant">TAP TO LOG SET</span>
+<span class="block font-headline-md text-on-surface leading-tight">"Bench 62, 8 reps"</span>
+</div>
+</div>
+</button>
+</section>
+<!-- Music Controls -->
+<section class="mt-4 pb-20">
+<div class="glass-card rounded-2xl p-4 flex items-center justify-between border-none bg-surface-container-low/60">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="High-energy phonk music album cover with glitchy neon typography, dark aesthetics, and intense high-contrast lighting, fitting for a heavy gym workout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeX-q6RFQYUcxlpWF1hB_RYBdFJBQrbjopkb1EnXKjY2xuyYLAqqbKDxb7EeYmxlH7caoUeXdTb8u-hMXRdYKoBJarPZLdP_C-NhfwmL7NrPVM1HxPKI3QCXSrplfRTbetTPjLTseY8y5-chtyJvivFk0wD5FqXKgARdOaj-3EjI6gYgtSdEY4PiMA5ML9K0Rb55PaJixMT1jAWTkQQynMJopJDd9SZo4zLTzXR5JTOzI9YtIfD8UQGyJOIJw5VP5d76vu5Suaol8"/>
+</div>
+<div class="truncate">
+<p class="font-bold text-on-surface truncate">Hyperfocus Phonk</p>
+<p class="text-label-caps font-label-caps text-on-surface-variant truncate">Aarohi Gym Mix</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:text-white" data-icon="skip_previous">skip_previous</button>
+<button class="material-symbols-outlined p-3 bg-primary text-on-primary rounded-full hover:opacity-90 active:scale-90 transition-all" data-icon="pause" style="font-variation-settings: 'FILL' 1;">pause</button>
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:text-white" data-icon="skip_next">skip_next</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Navigation Shell & Voice Orb Anchor -->
+<div class="fixed bottom-0 left-0 w-full z-50">
+<!-- Persistent Glowing Voice Orb -->
+<div class="absolute bottom-[104px] left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none">
+<div class="relative w-24 h-24 flex items-center justify-center">
+<div class="absolute inset-0 bg-primary/20 blur-[40px] rounded-full animate-pulse-slow"></div>
+
+</div>
+</div>
+<!-- Bottom Nav Bar -->
+<nav class="h-[88px] bg-surface-container-low/80 backdrop-blur-md flex justify-around items-center px-container-padding-mobile pb-safe border-t border-secondary-container">
+<button class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors active:scale-110 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full w-touch-target-min h-touch-target-min active:scale-110 duration-300 ease-out shadow-[0_-4px_20px_rgba(255,184,116,0.1)]">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors active:scale-110 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant w-touch-target-min h-touch-target-min hover:text-primary transition-colors active:scale-110 duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+</nav>
+</div>
+<script>
+        // Simple micro-interaction for the voice log button
+        const voiceBtn = document.querySelector('button.active-glow-border');
+        voiceBtn.addEventListener('mousedown', () => {
+            voiceBtn.style.boxShadow = "0 0 30px rgba(255, 184, 116, 0.6)";
+        });
+        voiceBtn.addEventListener('mouseup', () => {
+            voiceBtn.style.boxShadow = "0 0 15px rgba(255, 184, 116, 0.4)";
+        });
+
+        // Basic timer countdown simulation for UI feedback
+        let timeLeft = 45;
+        const timerSpan = document.querySelector('.text-\\[64px\\]');
+        setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                timerSpan.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                timeLeft = 45; // loop for demo
+            }
+        }, 1000);
+    </script>
+</body></html>
