@@ -25,7 +25,7 @@ async function callGemini(
   system: string,
   messages: Msg[],
 ): Promise<string> {
-  const cleanModel = model.startsWith("gemini") ? model : "gemini-3.5-flash-lite";
+  const cleanModel = model.startsWith("gemini") ? model : "gemini-3.6-flash";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${apiKey}`;
 
   const contents = messages
