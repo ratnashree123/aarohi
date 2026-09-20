@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Aarohi 3D Interactive Room</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; background:#0B0914; }
+  canvas { display:block; width:100%; height:100%; touch-action:none; }
+</style>
+<!-- INJECT_SCRIPTS_HERE -->
+</head>
+<body>
+<script>
+(function() {
+  let renderer, scene, camera, controls;
+  let avatarModel = null;
+  let clock = null;
+
+  // Key bones for humanoid posing & gestures
+  let leftBust1 = null, leftBust2 = null;
+  let rightBust1 = null, rightBust2 = null;
+  let spineBone = null, chestBone = null, upperChestBone = null;
+  let leftUpperArm = null, leftLowerArm = null, leftHand = null;
+  let rightUpperArm = null, rightLowerArm = null, rightHand = null;
+  let headBone = null, neckBone = null;
+
+  // Meshes & Materials
+  let faceMesh = null;
+  let topMaterial = null;
+  let bottomMaterial = null;
+  const originalTextures = {};
+
+  // State
+  let isTalking = false;
+  let currentGesture = 'idle';
+  let currentExpression = 'joy';
+
+  // Target bone rotations for smooth human-like gestures
+  const targetRotations = {
+    leftUpperArm: { x: 0.1, y: 0.05, z: 1.25 },
+    leftLowerArm: { x: 0.0, y: -0.35, z: 0.0 },
+    leftHand:     { x: 0.0, y: 0.0, z: 0.0 },
+    rightUpperArm:{ x: 0.1, y: -0.05, z: -1.25 },
+    rightLowerArm:{ x: 0.0, y: 0.35, z: 0.0 },
+    rightHand:    { x: 0.0, y: 0.0, z: 0.0 },
+    head:         { x: 0.03, y: 0.0, z: 0.0 }
+  };
+
+  function init() {
+    // ── Renderer with Soft Dimmed Exposure ──
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    if (renderer.outputEncoding !== undefined) {
+      renderer.outputEncoding = THREE.sRGBEncoding;
+    } else if (renderer.outputColorSpace !== undefined) {
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+    }
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    // Dimmed exposure so skin is never blown-out paper white
+    renderer.toneMappingExposure = 0.92;
+    document.body.appendChild(renderer.domElement);
+
+    // ── Scene ──
+    scene = new THREE.Scene();
+
+    // ── Camera (Portrait Framing for Avatar & Upper Body) ──
+    camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.22, 1.65);
+
+    // ── Controls ──
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1.02, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.enablePan = false;
+    controls.minDistance = 0.9;
+    controls.maxDistance = 3.8;
+    controls.minPolarAngle = 0.25;
+    controls.maxPolarAngle = Math.PI * 0.72;
+    controls.update();
+
+    // ── Warm Dimmed Lighting ──
+    // Soft peach ambient light
+    const ambientLight = new THREE.AmbientLight(0xffeedd, 0.48);
+    scene.add(ambientLight);
+
+    // Soft key light
+    const keyLight = new THREE.DirectionalLight(0xfff0e8, 0.85);
+    keyLight.position.set(1.8, 3.2, 2.8);
+    scene.add(keyLight);
+
+    // Soft lavender fill light
+    const fillLight = new THREE.DirectionalLight(0xd4c0ea, 0.45);
+    fillLight.position.set(-2.0, 1.8, -1.2);
+    scene.add(fillLight);
+
+    // Warm subtle rim light
+    const rimLight = new THREE.PointLight(0xffa550, 0.65, 5);
+    rimLight.position.set(0, 2.0, -1.8);
+    scene.add(rimLight);
+
+    // Soft Floor Glow Disc
+    const floorGeo = new THREE.CircleGeometry(1.6, 48);
+    const floorMat = new THREE.MeshBasicMaterial({
+      color: 0x1a1224,
+      transparent: true,
+      opacity: 0.6,
+    });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = 0.0;
+    scene.add(floor);
+
+    clock = new THREE.Clock();
+    animate();
+
+    window.addEventListener('resize', onWindowResize);
+
+    if (window.__MODEL_URL__) {
+      loadModel(window.__MODEL_URL__);
+    }
+  }
+
+  function setupBonesAndMaterials() {
+    if (!avatarModel) return;
+
+    avatarModel.traverse(child => {
+      if (child.isBone) {
+        const name = child.name;
+        if (name === 'J_Sec_L_Bust1') leftBust1 = child;
+        if (name === 'J_Sec_L_Bust2') leftBust2 = child;
+        if (name === 'J_Sec_R_Bust1') rightBust1 = child;
+        if (name === 'J_Sec_R_Bust2') rightBust2 = child;
+        if (name === 'J_Bip_C_Spine') spineBone = child;
+        if (name === 'J_Bip_C_Chest') chestBone = child;
+        if (name === 'J_Bip_C_UpperChest') upperChestBone = child;
+        if (name === 'J_Bip_L_UpperArm') leftUpperArm = child;
+        if (name === 'J_Bip_L_LowerArm') leftLowerArm = child;
+        if (name === 'J_Bip_L_Hand') leftHand = child;
+        if (name === 'J_Bip_R_UpperArm') rightUpperArm = child;
+        if (name === 'J_Bip_R_LowerArm') rightLowerArm = child;
+        if (name === 'J_Bip_R_Hand') rightHand = child;
+        if (name === 'J_Bip_C_Head') headBone = child;
+        if (name === 'J_Bip_C_Neck') neckBone = child;
+      }
+
+      if (child.isMesh) {
+        if (child.name.includes('Face') || (child.morphTargetDictionary && Object.keys(child.morphTargetDictionary).length > 10)) {
+          faceMesh = child;
+        }
+
+        if (child.material) {
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          mats.forEach(m => {
+            const mName = m.name || '';
+            // Warm peach skin tone adjustment so face and body are never washed out white
+            if (mName.includes('SKIN') || mName.includes('Face_00') || mName.includes('Body_00')) {
+              m.color = new THREE.Color(0.96, 0.88, 0.82);
+            }
+            if (mName.includes('Tops')) {
+              topMaterial = m;
+              if (!originalTextures['top']) originalTextures['top'] = m.map;
+            }
+            if (mName.includes('Bottoms')) {
+              bottomMaterial = m;
+              if (!originalTextures['bottom']) originalTextures['bottom'] = m.map;
+            }
+          });
+        }
+      }
+    });
+
+    // ── Lock to Sculpted Size 32, Cup C Proportions ──
+    // 32C bust projection & volume
+    const bustScale = 1.32;
+    if (leftBust1) leftBust1.scale.set(bustScale, bustScale, bustScale * 1.08);
+    if (leftBust2) leftBust2.scale.set(bustScale, bustScale, bustScale);
+    if (rightBust1) rightBust1.scale.set(bustScale, bustScale, bustScale * 1.08);
+    if (rightBust2) rightBust2.scale.set(bustScale, bustScale, bustScale);
+
+    if (chestBone) {
+      chestBone.scale.set(1.08, 1.02, 1.15);
+    }
+    if (spineBone) {
+      // Natural cinched waistline
+      spineBone.scale.set(0.92, 1.0, 0.90);
+    }
+
+    // Set initial natural pose
+    setGesture('hair_touch');
+    setExpression('joy', 0.65);
+  }
+
+  // ── Realistic Human Hand Gestures ──
+  function setGesture(name) {
+    currentGesture = name;
+    switch (name) {
+      case 'hair_touch': // Left hand gently touching hair and ear (matching reference photo)
+        targetRotations.leftUpperArm = { x: -0.4, y: 0.25, z: 1.25 };
+        targetRotations.leftLowerArm = { x: 0.45, y: -1.95, z: 0.1 };
+        targetRotations.leftHand     = { x: 0.2, y: 0.1, z: -0.3 };
+        targetRotations.rightUpperArm= { x: 0.1, y: 0.05, z: -1.25 };
+        targetRotations.rightLowerArm= { x: 0.0, y: 0.35, z: 0.0 };
+        targetRotations.rightHand    = { x: 0.0, y: 0.0, z: 0.0 };
+        targetRotations.head         = { x: 0.04, y: -0.06, z: 0.03 };
+        break;
+
+      case 'wave': // Right hand waving hello sweetly
+        targetRotations.leftUpperArm = { x: 0.1, y: 0.05, z: 1.25 };
+        targetRotations.leftLowerArm = { x: 0.0, y: -0.35, z: 0.0 };
+        targetRotations.leftHand     = { x: 0.0, y: 0.0, z: 0.0 };
+        targetRotations.rightUpperArm= { x: -0.3, y: -0.2, z: -1.6 };
+        targetRotations.rightLowerArm= { x: 0.5, y: 1.8, z: 0.0 };
+        targetRotations.rightHand    = { x: 0.1, y: 0.0, z: 0.2 };
+        targetRotations.head         = { x: 0.02, y: 0.05, z: -0.02 };
+        break;
+
+      case 'heart': // Hand placed tenderly over heart/chest
+        targetRotations.leftUpperArm = { x: 0.1, y: 0.05, z: 1.25 };
+        targetRotations.leftLowerArm = { x: 0.0, y: -0.35, z: 0.0 };
+        targetRotations.leftHand     = { x: 0.0, y: 0.0, z: 0.0 };
+        targetRotations.rightUpperArm= { x: -0.25, y: -0.4, z: -0.9 };
+        targetRotations.rightLowerArm= { x: 0.4, y: 1.65, z: 0.0 };
+        targetRotations.rightHand    = { x: -0.2, y: 0.1, z: 0.1 };
+        targetRotations.head         = { x: 0.06, y: -0.04, z: 0.02 };
+        break;
+
+      case 'hands_on_hips': // Confident posture
+        targetRotations.leftUpperArm = { x: -0.1, y: 0.15, z: 0.95 };
+        targetRotations.leftLowerArm = { x: 0.2, y: -1.45, z: 0.0 };
+        targetRotations.leftHand     = { x: 0.3, y: 0.0, z: 0.2 };
+        targetRotations.rightUpperArm= { x: -0.1, y: -0.15, z: -0.95 };
+        targetRotations.rightLowerArm= { x: 0.2, y: 1.45, z: 0.0 };
+        targetRotations.rightHand    = { x: 0.3, y: 0.0, z: -0.2 };
+        targetRotations.head         = { x: -0.02, y: 0.0, z: 0.0 };
+        break;
+
+      case 'idle':
+      default: // Relaxed graceful stance
+        targetRotations.leftUpperArm = { x: 0.08, y: 0.05, z: 1.28 };
+        targetRotations.leftLowerArm = { x: 0.0, y: -0.35, z: 0.0 };
+        targetRotations.leftHand     = { x: 0.0, y: 0.0, z: 0.0 };
+        targetRotations.rightUpperArm= { x: 0.08, y: -0.05, z: -1.28 };
+        targetRotations.rightLowerArm= { x: 0.0, y: 0.35, z: 0.0 };
+        targetRotations.rightHand    = { x: 0.0, y: 0.0, z: 0.0 };
+        targetRotations.head         = { x: 0.02, y: 0.0, z: 0.0 };
+        break;
+    }
+  }
+
+  function lerpBone(bone, target, factor) {
+    if (!bone || !target) return;
+    bone.rotation.x += (target.x - bone.rotation.x) * factor;
+    bone.rotation.y += (target.y - bone.rotation.y) * factor;
+    bone.rotation.z += (target.z - bone.rotation.z) * factor;
+  }
+
+  // ── Facial Expressions ──
+  function setExpression(name, weight = 0.7) {
+    currentExpression = name;
+    if (!faceMesh || !faceMesh.morphTargetDictionary || !faceMesh.morphTargetInfluences) return;
+    const dict = faceMesh.morphTargetDictionary;
+
+    // Reset standard emotion targets
+    const emotionKeys = ['Joy', 'Sorrow', 'Angry', 'Surprised', 'Fun'];
+    for (const key in dict) {
+      for (const emo of emotionKeys) {
+        if (key.includes(emo)) faceMesh.morphTargetInfluences[dict[key]] = 0.0;
+      }
+    }
+
+    // Apply target emotion
+    for (const key in dict) {
+      if (name === 'joy' || name === 'sweet') {
+        if (key.includes('Joy') || key.includes('Fun')) {
+          faceMesh.morphTargetInfluences[dict[key]] = weight;
+        }
+      } else if (name === 'pouty') {
+        if (key.includes('Sorrow')) {
+          faceMesh.morphTargetInfluences[dict[key]] = weight * 0.55;
+        }
+      } else if (name === 'teasing') {
+        if (key.includes('Joy')) faceMesh.morphTargetInfluences[dict[key]] = weight * 0.6;
+        if (key.includes('EYE_Close_R')) faceMesh.morphTargetInfluences[dict[key]] = 0.8; // playful wink!
+      } else if (name === 'surprised') {
+        if (key.includes('Surprised')) faceMesh.morphTargetInfluences[dict[key]] = weight;
+      }
+    }
+  }
+
+  // ── Dress Collection Texture & Material Swapping ──
+  function setOutfit(id) {
+    if (!topMaterial) return;
+
+    switch (id) {
+      case 'soft_modal': // Underwire-free soft modal ribbed camisole with lace trim
+        topMaterial.color.setHex(0x282828); // Soft ribbed charcoal black
+        topMaterial.opacity = 1.0;
+        topMaterial.transparent = false;
+        if (bottomMaterial) bottomMaterial.color.setHex(0x242424);
+        break;
+
+      case 'bias_cut_satin': // Bias-cut royal purple silk gown with gold bead cords
+        topMaterial.color.setHex(0x8B35C8); // Rich royal purple silk
+        topMaterial.opacity = 1.0;
+        topMaterial.transparent = false;
+        if (bottomMaterial) bottomMaterial.color.setHex(0x7628AF);
+        break;
+
+      case 'seamless_microfiber': // Laser-cut high-gauge blush microfiber
+        topMaterial.color.setHex(0xE5988B); // Warm blush microfiber
+        topMaterial.opacity = 0.95;
+        topMaterial.transparent = true;
+        if (bottomMaterial) bottomMaterial.color.setHex(0xD8887C);
+        break;
+
+      case 'silk_saree': // Festive crimson & gold silk drape
+        topMaterial.color.setHex(0x9E1B32); // Rich crimson festive silk
+        topMaterial.opacity = 1.0;
+        topMaterial.transparent = false;
+        if (bottomMaterial) bottomMaterial.color.setHex(0x801426);
+        break;
+
+      case 'peach_sundress': // Breezy resort sundress
+        topMaterial.color.setHex(0xFA8072); // Light coral peach
+        topMaterial.opacity = 1.0;
+        topMaterial.transparent = false;
+        if (bottomMaterial) bottomMaterial.color.setHex(0xF07062);
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  function loadModel(url) {
+    const loader = new THREE.GLTFLoader();
+
+    loader.load(url, function(gltf) {
+      if (avatarModel) {
+        scene.remove(avatarModel);
+        avatarModel = null;
+      }
+
+      avatarModel = gltf.scene;
+      avatarModel.position.set(0, 0, 0);
+      scene.add(avatarModel);
+
+      setupBonesAndMaterials();
+
+      if (window.FlutterChannel) {
+        window.FlutterChannel.postMessage(JSON.stringify({ type: 'modelLoaded', success: true }));
+      }
+    }, function(progress) {
+      const pct = progress.total > 0 ? Math.round(progress.loaded / progress.total * 100) : 0;
+      if (window.FlutterChannel) {
+        window.FlutterChannel.postMessage(JSON.stringify({ type: 'loadProgress', percent: pct }));
+      }
+    }, function(error) {
+      console.error('GLB load error:', error);
+      if (window.FlutterChannel) {
+        window.FlutterChannel.postMessage(JSON.stringify({ type: 'loadError', message: String(error) }));
+      }
+    });
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const time = clock ? clock.getElapsedTime() : 0;
+    const lerpFactor = 0.06;
+
+    // ── Smooth Humanoid Gesture Bone Interpolation ──
+    lerpBone(leftUpperArm, targetRotations.leftUpperArm, lerpFactor);
+    lerpBone(leftLowerArm, targetRotations.leftLowerArm, lerpFactor);
+    lerpBone(leftHand, targetRotations.leftHand, lerpFactor);
+    lerpBone(rightUpperArm, targetRotations.rightUpperArm, lerpFactor);
+    lerpBone(rightLowerArm, targetRotations.rightLowerArm, lerpFactor);
+    lerpBone(rightHand, targetRotations.rightHand, lerpFactor);
+    lerpBone(headBone, targetRotations.head, lerpFactor);
+
+    // ── Natural Breathing Loop ──
+    if (upperChestBone) {
+      upperChestBone.rotation.x += Math.sin(time * 2.2) * 0.0012;
+    }
+    if (chestBone) {
+      chestBone.rotation.z += Math.sin(time * 1.6) * 0.0006;
+    }
+
+    // ── Waving Hand Wave Oscillation ──
+    if (currentGesture === 'wave' && rightHand) {
+      rightHand.rotation.z = targetRotations.rightHand.z + Math.sin(time * 6.0) * 0.25;
+    }
+
+    // ── Natural Eye Blinking Cycle ──
+    if (faceMesh && faceMesh.morphTargetDictionary) {
+      const dict = faceMesh.morphTargetDictionary;
+      const blinkIdx = dict['Face.M_F00_000_00_Fcl_EYE_Close'];
+      if (blinkIdx !== undefined && currentExpression !== 'teasing') {
+        const cycle = time % 3.5;
+        const blinkVal = (cycle > 3.3) ? Math.sin((cycle - 3.3) / 0.2 * Math.PI) : 0.0;
+        faceMesh.morphTargetInfluences[blinkIdx] = blinkVal;
+      }
+
+      // ── Mouth Lip Sync when Speaking ──
+      if (isTalking) {
+        const mouthOpen = Math.abs(Math.sin(time * 12.0)) * 0.75;
+        for (const key in dict) {
+          if (key.includes('MTH_A') || key.includes('MTH_O')) {
+            faceMesh.morphTargetInfluences[dict[key]] = mouthOpen;
+          }
+        }
+      } else {
+        for (const key in dict) {
+          if (key.includes('MTH_A') || key.includes('MTH_O')) {
+            faceMesh.morphTargetInfluences[dict[key]] = 0.0;
+          }
+        }
+      }
+    }
+
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  // ── Exposed API for Flutter Controller ──
+  window.setGesture = function(name) {
+    setGesture(name);
+  };
+
+  window.setExpression = function(name) {
+    setExpression(name, 0.7);
+  };
+
+  window.setOutfit = function(id) {
+    setOutfit(id);
+  };
+
+  window.setTalking = function(talking) {
+    isTalking = Boolean(talking);
+  };
+
+  window.setCameraView = function(view) {
+    if (view === 'closeup') {
+      camera.position.set(0, 1.35, 1.1);
+      controls.target.set(0, 1.25, 0);
+    } else if (view === 'outfit') {
+      camera.position.set(0, 1.05, 1.5);
+      controls.target.set(0, 0.95, 0);
+    } else {
+      camera.position.set(0, 1.22, 1.65);
+      controls.target.set(0, 1.02, 0);
+    }
+    controls.update();
+  };
+
+  window.loadModelUrl = function(url) {
+    loadModel(url);
+  };
+
+  if (window.THREE) {
+    init();
+  } else {
+    window.addEventListener('load', init);
+  }
+})();
+</script>
+</body>
+</html>
